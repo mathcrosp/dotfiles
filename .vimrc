@@ -57,7 +57,7 @@ set cursorline
 set hlsearch
 
 " set colorscheme
-colorscheme default
+colorscheme blue
 
 " lines above/below cursor
 set scrolloff=4
@@ -91,8 +91,8 @@ nnoremap _ :resize -5<Return>
 nnoremap + :resize +5<Return>
 nnoremap - :vertical resize -5<Return>
 nnoremap = :vertical resize +5<Return>
-nnoremap <C-Tab> gt
-nnoremap <C-S-Tab> gT
+nnoremap <Tab> gt
+nnoremap <S-Tab> gT
 vnoremap kj <Esc>
 vnoremap <S-w> :w<Return>
 vnoremap <Leader>s :s//<Left>
