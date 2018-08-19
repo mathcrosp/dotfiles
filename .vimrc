@@ -57,7 +57,7 @@ set cursorline
 set hlsearch
 
 " set colorscheme
-colorscheme blue
+colorscheme zellner
 
 " lines above/below cursor
 set scrolloff=4
