@@ -2,6 +2,8 @@
 
 export EDITOR="/usr/bin/vim"
 export VISUAL="/usr/bin/vim"
+export GOPATH="$HOME/gopath"
+export GOROOT="/usr/lib/go-1.9"
 export HISTCONTROL=ignoredups
 
 [ -n "$TMUX" ] && export TERM=screen-256color
