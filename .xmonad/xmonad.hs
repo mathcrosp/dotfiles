@@ -1,76 +1,62 @@
-import XMonad
+import XMonad hiding ( (|||) )
+import XMonad.Config.Kde
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.UrgencyHook
-import XMonad.Layout
+import XMonad.Layout hiding ( (|||) )
 import XMonad.Layout.Accordion
-import XMonad.Layout.Circle
-import XMonad.Layout.Dishes
 import XMonad.Layout.Grid
+import XMonad.Layout.LayoutCombinators
+import XMonad.Layout.Named
 import XMonad.Layout.PerWorkspace (onWorkspace)
 import XMonad.Layout.ResizableTile
 import XMonad.Layout.Spacing
 import XMonad.Util.EZConfig
-import XMonad.Util.Run (spawnPipe)
 import System.IO
 
-import qualified XMonad.StackSet as W
-
-browserSpacing = 75
-defaultSpacing = 3
-workspacesList = map show [1..9]
+defaultSpacing = 0
+workspacesList = map show [1..8]
 
 customLayoutHook =
-    onWorkspace (workspacesList !! 1 ) ( full ||| accordionSp ||| gridSp ) $
-    onWorkspace (workspacesList !! 4 ) ( fullSp ||| full ||| tiled ) $
-    accordionSp ||| tiled ||| tiledMirror ||| circleSp ||| gridSp ||| full ||| fullSp
+  onWorkspace (workspacesList !! 4 ) ( Full ||| tiled ||| Accordion ) $
+  tiled ||| mirrored ||| Grid ||| Full ||| Accordion
   where
-    tiled       = spacing defaultSpacing $ Tall master delta ratio
-    tiledMirror = spacing defaultSpacing $ Mirror $ Tall master delta ratio
-    full        = spacing defaultSpacing $ Full
-    fullSp      = spacing browserSpacing $ Full
-    gridSp      = spacing defaultSpacing $ Grid
-    accordionSp = spacing defaultSpacing $ Accordion
-    circleSp    = spacing defaultSpacing $ Circle
-    defaultTall = ResizableTall 1 (1/100) (1/2) []
+    tiled       = named "tiled" $
+                  spacing defaultSpacing $
+                  Tall master delta ratio
+    mirrored    = named "mirrored" $
+                  spacing defaultSpacing $
+                  Mirror $
+                  Tall master delta ratio
     master      = 1
     ratio       = 1/2
     delta       = 1/100
 
-customManageHook = manageDocks <+> compHook <+> manageHook defaultConfig
-    where compHook = composeAll
-                 [ className =? "Firefox" --> doShift "5" ]
-
-customLogHook xmproc = dynamicLogWithPP $ compPP { ppOutput = hPutStrLn xmproc }
-  where
-    compPP      = defaultPP {
-    ppHidden    = xmobarColor "#a9acb6" ""
-    , ppCurrent = xmobarColor "#e2e2e2" "" . wrap "[" "]"
-    , ppUrgent  = xmobarColor "#a9acb6" "" . wrap "*" "*"
-    , ppLayout  = xmobarColor "#ff0000" ""
-    , ppTitle   = (\str -> "")
-    , ppOrder   = \(ws:_:t:_) -> [ws, t]
-    , ppSep     = "<fc=#a9acb6> | </fc>"
-    }
+customManageHook = manageDocks <+> manageHook kde4Config
 
 customKeys =
-      [ (( mod4Mask, xK_Print ), spawn "gnome-screenshot")
-      , (( mod4Mask .|. shiftMask , xK_Print ), spawn "gnome-screenshot -w")
-      , (( controlMask .|. shiftMask , xK_Print ), spawn "gnome-screenshot -a")
+      [ (( mod4Mask, xK_Print ), spawn "spectacle")
+      , (( mod4Mask .|. shiftMask, xK_Print ), spawn "spectacle -a")
+      , (( controlMask .|. shiftMask, xK_Print ), spawn "spectacle -r")
+      , (( mod4Mask, xK_F1), sendMessage $ JumpToLayout "tiled")
+      , (( mod4Mask, xK_F2), sendMessage $ JumpToLayout "mirrored")
+      , (( mod4Mask, xK_F3), sendMessage $ JumpToLayout "Grid")
+      , (( mod4Mask, xK_F4), sendMessage $ JumpToLayout "Full")
+      , (( mod4Mask, xK_F5), sendMessage $ JumpToLayout "Accordion")
       ]
 
 main = do
-    xmproc <- spawnPipe "/usr/bin/xmobar /home/mathcrosp/.xmonad/xmobarrc.hs"
-    spawn "setxkbmap -layout 'us,ru' -option gpr:caps_toggle"
-    xmonad $ withUrgencyHook NoUrgencyHook $ defaultConfig {
+    xmonad $ withUrgencyHook NoUrgencyHook $ kde4Config {
         layoutHook         = avoidStruts $ customLayoutHook
       , workspaces         = workspacesList
       , modMask            = mod4Mask
-      , terminal           = "xfce4-terminal"
-      , borderWidth        = 3
-      , normalBorderColor  = "#687c97"
-      , focusedBorderColor = "#d2d2d2"
+      , terminal           = "konsole"
+      , borderWidth        = 2
+      , normalBorderColor  = "#43484d"
+      , focusedBorderColor = "#387ea3"
       , manageHook         = customManageHook
-      , logHook            = customLogHook xmproc
-      , focusFollowsMouse  = False
+      , focusFollowsMouse  = True
     } `additionalKeys` customKeys
+      `removeKeys` [ (mod4Mask, xK_space)
+                   , (mod4Mask .|. shiftMask, xK_space)]
+
