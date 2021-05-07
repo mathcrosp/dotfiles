@@ -15,7 +15,7 @@ import XMonad.Util.EZConfig
 import System.IO
 
 defaultSpacing = 0
-workspacesList = map show [1..8]
+workspacesList = map show [1..9]
 
 customLayoutHook =
   onWorkspace (workspacesList !! 4 ) ( Full ||| tiled ||| Accordion ) $
@@ -35,15 +35,12 @@ customLayoutHook =
 customManageHook = manageDocks <+> manageHook kde4Config
 
 customKeys =
-      [ (( mod4Mask, xK_Print ), spawn "spectacle")
-      , (( mod4Mask .|. shiftMask, xK_Print ), spawn "spectacle -a")
-      , (( controlMask .|. shiftMask, xK_Print ), spawn "spectacle -r")
-      , (( mod4Mask, xK_F1), sendMessage $ JumpToLayout "tiled")
-      , (( mod4Mask, xK_F2), sendMessage $ JumpToLayout "mirrored")
-      , (( mod4Mask, xK_F3), sendMessage $ JumpToLayout "Grid")
-      , (( mod4Mask, xK_F4), sendMessage $ JumpToLayout "Full")
-      , (( mod4Mask, xK_F5), sendMessage $ JumpToLayout "Accordion")
-      ]
+    [ (( mod4Mask, xK_F1), sendMessage $ JumpToLayout "tiled")
+    , (( mod4Mask, xK_F2), sendMessage $ JumpToLayout "mirrored")
+    , (( mod4Mask, xK_F3), sendMessage $ JumpToLayout "Grid")
+    , (( mod4Mask, xK_F4), sendMessage $ JumpToLayout "Full")
+    , (( mod4Mask, xK_F5), sendMessage $ JumpToLayout "Accordion")
+    ]
 
 main = do
     xmonad $ withUrgencyHook NoUrgencyHook $ kde4Config {
@@ -52,11 +49,10 @@ main = do
       , modMask            = mod4Mask
       , terminal           = "konsole"
       , borderWidth        = 2
-      , normalBorderColor  = "#43484d"
-      , focusedBorderColor = "#387ea3"
+      , normalBorderColor  = "#65666c"
+      , focusedBorderColor = "#2660c4"
       , manageHook         = customManageHook
       , focusFollowsMouse  = True
-    } `additionalKeys` customKeys
-      `removeKeys` [ (mod4Mask, xK_space)
+    } `removeKeys` [ (mod4Mask, xK_space)
                    , (mod4Mask .|. shiftMask, xK_space)]
-
+      `additionalKeys` customKeys
